@@ -1,0 +1,123 @@
+/** @import must precede all other statements */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Tailwind CSS theme
+   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
+   * A different format will require also updating the theme in tailwind.config.ts.
+  */
+  :root {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 95%;
+
+    --card: 15 30% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 0 84% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 84% 50%;
+
+    --muted: 0 0% 30%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 0 84% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 0 0% 25%;
+    --input: 0 0% 20%;
+    --ring: 0 84% 50%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 12%;
+
+    --sidebar-foreground: 0 0% 90%;
+
+    --sidebar-primary: 0 84% 50%;
+
+    --sidebar-primary-foreground: 0 0% 100%;
+
+    --sidebar-accent: 0 0% 25%;
+
+    --sidebar-accent-foreground: 0 84% 50%;
+
+    --sidebar-border: 0 0% 20%;
+
+    --sidebar-ring: 0 84% 50%;
+  }
+
+  .dark {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 95%;
+
+    --card: 15 30% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 0 84% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 84% 50%;
+
+    --muted: 0 0% 30%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 0 84% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 0 0% 25%;
+    --input: 0 0% 20%;
+    --ring: 0 84% 50%;
+    --sidebar-background: 0 0% 12%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 0 84% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 25%;
+    --sidebar-accent-foreground: 0 84% 50%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 0 84% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:rgb(40,10,10);stop-opacity:1" /><stop offset="50%" style="stop-color:rgb(15,15,25);stop-opacity:1" /><stop offset="100%" style="stop-color:rgb(10,5,15);stop-opacity:1" /></linearGradient></defs><rect width="1000" height="1000" fill="url(%23grad1)"/><circle cx="20%" cy="30%" r="300" fill="rgba(239,68,68,0.08)" /><circle cx="80%" cy="70%" r="250" fill="rgba(30,30,50,0.1)" /></svg>');
+    background-attachment: fixed;
+    background-size: cover;
+  }
+
+  :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  pre,
+  code {
+    overflow-x: auto;
+    white-space: pre;
+  }
+}
