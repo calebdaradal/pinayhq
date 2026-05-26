@@ -10,3 +10,13 @@
 export interface DemoResponse {
   message: string;
 }
+
+export interface TurnstileVerifyRequest {
+  token: string;
+}
+
+export interface TurnstileVerifyResponse {
+  success: boolean;
+  errorCodes?: string[];
+  message?: string;
+}
