@@ -40,9 +40,6 @@ export const handleTurnstileVerify: RequestHandler<
     const payload = new URLSearchParams();
     payload.append("secret", secret);
     payload.append("response", token);
-    if (req.ip) {
-      payload.append("remoteip", req.ip);
-    }
 
     const cloudflareResponse = await fetch(TURNSTILE_VERIFY_URL, {
       method: "POST",

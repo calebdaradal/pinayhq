@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { handleTurnstileVerify } from "./routes/turnstile";
+import { handleCtaConfig } from "./routes/config";
 
 export function createServer() {
   const app = express();
@@ -19,6 +20,7 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+  app.get("/api/config/cta", handleCtaConfig);
   app.post("/api/turnstile/verify", handleTurnstileVerify);
 
   return app;

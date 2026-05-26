@@ -20,3 +20,7 @@ export interface TurnstileVerifyResponse {
   errorCodes?: string[];
   message?: string;
 }
+
+export interface CtaConfigResponse {
+  ctaUrl: string;
+}

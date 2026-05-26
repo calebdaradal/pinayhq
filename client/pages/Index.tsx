@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import type { TurnstileVerifyResponse } from "@shared/api";
+import type { CtaConfigResponse, TurnstileVerifyResponse } from "@shared/api";
 
 interface TurnstileRenderOptions {
   sitekey: string;
@@ -17,13 +17,13 @@ interface TurnstileApi {
 
 export default function Index() {
   const previewImages = ["/preview.jpg", "/preview2.jpeg", "/preview3.jpg", "/preview4.jpeg"];
-  const ctaUrl = "http://link.pinayhq.online/join";
   const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
   const [activePreviewIndex, setActivePreviewIndex] = useState(0);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [isHumanVerified, setIsHumanVerified] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(null);
-  const [turnstileWidgetId, setTurnstileWidgetId] = useState<string | undefined>(undefined);
+  const [ctaUrl, setCtaUrl] = useState<string | null>(null);
+  const [ctaLoadError, setCtaLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -32,6 +32,31 @@ export default function Index() {
 
     return () => window.clearInterval(intervalId);
   }, [previewImages.length]);
+
+  useEffect(() => {
+    const loadCtaConfig = async () => {
+      try {
+        const response = await fetch("/api/config/cta");
+        if (!response.ok) {
+          setCtaLoadError("Unable to load destination link.");
+          return;
+        }
+
+        const data = (await response.json()) as CtaConfigResponse;
+        const configuredCtaUrl = data.ctaUrl?.trim();
+        if (!configuredCtaUrl) {
+          setCtaLoadError("CTA_URL is missing. Add it to your environment variables.");
+          return;
+        }
+
+        setCtaUrl(configuredCtaUrl);
+      } catch {
+        setCtaLoadError("Unable to load destination link.");
+      }
+    };
+
+    void loadCtaConfig();
+  }, []);
 
   useEffect(() => {
     if (!turnstileSiteKey) {
@@ -50,23 +75,23 @@ export default function Index() {
       }
 
       container.innerHTML = "";
-      const widgetId = turnstile.render(container, {
+      turnstile.render(container, {
         sitekey: turnstileSiteKey,
         theme: "dark",
         callback: (token) => {
-          setTurnstileToken(token);
-          setVerificationError(null);
+          setIsHumanVerified(false);
+          void verifyTurnstileToken(token);
         },
         "expired-callback": () => {
-          setTurnstileToken(null);
+          setIsHumanVerified(false);
+          setVerificationError("Verification expired. Please verify again.");
         },
         "error-callback": () => {
-          setTurnstileToken(null);
+          setIsHumanVerified(false);
           setVerificationError("Turnstile failed to load. Please refresh the page.");
         },
       });
 
-      setTurnstileWidgetId(widgetId);
     };
 
     const existingScript = document.querySelector(
@@ -94,12 +119,7 @@ export default function Index() {
     };
   }, [turnstileSiteKey]);
 
-  const handleJoinNow = async () => {
-    if (!turnstileToken) {
-      setVerificationError("Please complete the verification first.");
-      return;
-    }
-
+  const verifyTurnstileToken = async (token: string) => {
     setIsVerifying(true);
     setVerificationError(null);
 
@@ -110,28 +130,50 @@ export default function Index() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          token: turnstileToken,
+          token,
         }),
       });
 
       const data = (await response.json()) as TurnstileVerifyResponse;
       if (!response.ok || !data.success) {
-        setVerificationError("Verification failed. Please try again.");
-        setTurnstileToken(null);
+        const hasErrorCodes = Boolean(data.errorCodes && data.errorCodes.length > 0);
+        setVerificationError(
+          hasErrorCodes
+            ? `Verification failed (${data.errorCodes?.join(", ")}). Please try again.`
+            : "Verification failed. Please try again.",
+        );
+        setIsHumanVerified(false);
 
         const turnstile = (window as Window & { turnstile?: TurnstileApi }).turnstile;
-        if (turnstile && turnstileWidgetId) {
-          turnstile.reset(turnstileWidgetId);
+        if (turnstile) {
+          turnstile.reset();
         }
-        return;
+        return false;
       }
 
-      window.location.assign(ctaUrl);
+      setIsHumanVerified(true);
+      return true;
     } catch {
+      setIsHumanVerified(false);
       setVerificationError("Unable to verify right now. Please try again.");
+      return false;
     } finally {
       setIsVerifying(false);
     }
+  };
+
+  const handleJoinNow = () => {
+    if (!isHumanVerified) {
+      setVerificationError("Please complete verification first.");
+      return;
+    }
+
+    if (!ctaUrl) {
+      setCtaLoadError("CTA_URL is missing. Add it to your environment variables.");
+      return;
+    }
+
+    window.location.assign(ctaUrl);
   };
 
   return (
@@ -223,12 +265,14 @@ export default function Index() {
         {/* CTA Button below card */}
         <div className="mt-12 flex flex-col items-center gap-4">
           <section id="turnstile-widget-container" className="min-h-[65px]" aria-label="Turnstile verification" />
+          {ctaLoadError ? <p className="text-sm text-red-300">{ctaLoadError}</p> : null}
+          {isHumanVerified ? <p className="text-sm text-emerald-300">Verified. You can continue.</p> : null}
           {verificationError ? <p className="text-sm text-red-300">{verificationError}</p> : null}
 
           <button
             type="button"
             onClick={handleJoinNow}
-            disabled={isVerifying}
+            disabled={isVerifying || !isHumanVerified || !ctaUrl}
             className="relative px-12 py-4 text-xl font-bold text-white bg-gradient-to-r from-red-600 via-red-500 to-red-700 rounded-lg overflow-hidden group transition-all duration-300 hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:scale-100"
           >
             {/* Animated background gradient */}
