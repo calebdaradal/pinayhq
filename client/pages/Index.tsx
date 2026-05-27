@@ -79,8 +79,15 @@ export default function Index() {
         sitekey: turnstileSiteKey,
         theme: "dark",
         callback: (token) => {
+          const normalizedToken = token?.trim();
+          if (!normalizedToken) {
+            setIsHumanVerified(false);
+            setVerificationError("Missing Turnstile token. Please verify again.");
+            return;
+          }
+
           setIsHumanVerified(false);
-          void verifyTurnstileToken(token);
+          void verifyTurnstileToken(normalizedToken);
         },
         "expired-callback": () => {
           setIsHumanVerified(false);
@@ -120,6 +127,13 @@ export default function Index() {
   }, [turnstileSiteKey]);
 
   const verifyTurnstileToken = async (token: string) => {
+    const normalizedToken = token?.trim();
+    if (!normalizedToken) {
+      setIsHumanVerified(false);
+      setVerificationError("Missing Turnstile token. Please verify again.");
+      return false;
+    }
+
     setIsVerifying(true);
     setVerificationError(null);
 
@@ -130,7 +144,7 @@ export default function Index() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          token,
+          token: normalizedToken,
         }),
       });
 

@@ -12,12 +12,38 @@ interface CloudflareTurnstileVerifyResult {
 const TURNSTILE_VERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
+function extractTurnstileToken(body: unknown): string | null {
+  if (!body) {
+    return null;
+  }
+
+  if (typeof body === "string") {
+    try {
+      const parsedBody = JSON.parse(body) as Record<string, unknown>;
+      const parsedToken = parsedBody.token ?? parsedBody["cf-turnstile-response"];
+      return typeof parsedToken === "string" && parsedToken.trim().length > 0
+        ? parsedToken.trim()
+        : null;
+    } catch {
+      return null;
+    }
+  }
+
+  if (typeof body === "object") {
+    const objectBody = body as Record<string, unknown>;
+    const token = objectBody.token ?? objectBody["cf-turnstile-response"];
+    return typeof token === "string" && token.trim().length > 0 ? token.trim() : null;
+  }
+
+  return null;
+}
+
 export const handleTurnstileVerify: RequestHandler<
   unknown,
   TurnstileVerifyResponse,
   TurnstileVerifyRequest
 > = async (req, res) => {
-  const token = req.body?.token;
+  const token = extractTurnstileToken(req.body);
 
   if (!token) {
     res.status(400).json({
