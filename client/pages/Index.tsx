@@ -137,10 +137,13 @@ export default function Index() {
       const data = (await response.json()) as TurnstileVerifyResponse;
       if (!response.ok || !data.success) {
         const hasErrorCodes = Boolean(data.errorCodes && data.errorCodes.length > 0);
+        const hasMessage = Boolean(data.message && data.message.trim().length > 0);
         setVerificationError(
           hasErrorCodes
             ? `Verification failed (${data.errorCodes?.join(", ")}). Please try again.`
-            : "Verification failed. Please try again.",
+            : hasMessage
+              ? data.message ?? "Verification failed. Please try again."
+              : "Verification failed. Please try again.",
         );
         setIsHumanVerified(false);
 
