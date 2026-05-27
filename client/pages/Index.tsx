@@ -281,37 +281,37 @@ export default function Index() {
         </div>
 
         {/* CTA Button below card */}
-        <div className="mt-12 flex flex-col items-center gap-4">
-          <section id="turnstile-widget-container" className="min-h-[65px]" aria-label="Turnstile verification" />
+        <div className="mt-12 flex flex-col items-center gap-3">
+          <section className="flex items-center justify-center gap-4">
+            <section id="turnstile-widget-container" className="min-h-[65px]" aria-label="Turnstile verification" />
+            <button
+              type="button"
+              onClick={handleJoinNow}
+              disabled={isVerifying || !isHumanVerified || !ctaUrl}
+              className="relative px-12 py-4 text-xl font-bold text-white bg-gradient-to-r from-red-600 via-red-500 to-red-700 rounded-lg overflow-hidden group transition-all duration-300 hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:scale-100"
+            >
+              {/* Animated background gradient */}
+              <div className="absolute inset-0 bg-gradient-to-r from-red-700 via-red-600 to-red-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+              {/* Glow effect */}
+              <div className="absolute inset-0 rounded-lg blur-xl bg-red-500/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+
+              {/* Inner shine effect */}
+              <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+              {/* Button shadow */}
+              <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-red-600 to-red-800 blur opacity-50 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+
+              <span className="relative flex items-center justify-center gap-2">
+                {isVerifying ? "Verifying..." : "Join now!"}
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+            </button>
+          </section>
           {ctaLoadError ? <p className="text-sm text-red-300">{ctaLoadError}</p> : null}
-          {isHumanVerified ? <p className="text-sm text-emerald-300">Verified. You can continue.</p> : null}
           {verificationError ? <p className="text-sm text-red-300">{verificationError}</p> : null}
-
-          <button
-            type="button"
-            onClick={handleJoinNow}
-            disabled={isVerifying || !isHumanVerified || !ctaUrl}
-            className="relative px-12 py-4 text-xl font-bold text-white bg-gradient-to-r from-red-600 via-red-500 to-red-700 rounded-lg overflow-hidden group transition-all duration-300 hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:scale-100"
-          >
-            {/* Animated background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-r from-red-700 via-red-600 to-red-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-            {/* Glow effect */}
-            <div className="absolute inset-0 rounded-lg blur-xl bg-red-500/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
-
-            {/* Inner shine effect */}
-            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-            {/* Button shadow */}
-            <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-red-600 to-red-800 blur opacity-50 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
-
-            <span className="relative flex items-center justify-center gap-2">
-              {isVerifying ? "Verifying..." : "Join now!"}
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </span>
-          </button>
         </div>
       </div>
     </div>
