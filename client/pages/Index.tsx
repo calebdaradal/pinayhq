@@ -142,6 +142,7 @@ export default function Index() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-turnstile-token": normalizedToken,
         },
         body: JSON.stringify({
           token: normalizedToken,
